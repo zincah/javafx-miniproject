@@ -1,0 +1,32 @@
+* {
+	-fx-primary-color: #007acc;
+	-fx-secondary-color: #4B6EAF;
+	-fx-grey-color: #b9b9b9;
+    
+	-fx-focus-color: -fx-secondary-color;
+}
+
+.text-field {
+	-fx-accent: -fx-primary-color;
+	-fx-background-color: -fx-grey-color, white;
+	-fx-background-insets: 0, 0 0 1.5 0;
+	-fx-background-radius: 2;
+	-fx-font-family: calibri;
+}
+.text-field:focused {
+	-fx-background-color: -fx-primary-color, white;
+	-fx-font-family: calibri;
+}
+
+.text-area {
+	-fx-accent: -fx-primary-color;
+	-fx-background-color: -fx-grey-color, white;
+	-fx-background-insets: 0, 0 0 1.5 0;
+	-fx-background-radius: 2;
+	-fx-font-family: calibri;
+}
+
+.text-area:focused {
+	-fx-background-color: -fx-primary-color, white;
+	-fx-font-family: calibri;
+}
