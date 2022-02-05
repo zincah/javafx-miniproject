@@ -17,6 +17,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -24,13 +25,23 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
@@ -42,6 +53,8 @@ public class UserStockController implements Initializable{
 	Stage stage;
 	Scene scene;
 
+	@FXML private AnchorPane anchorPane;
+	
     @FXML private TextField searchTxt;
     @FXML private Button refreshBtn;
     @FXML private Button salesBtn;
@@ -67,7 +80,6 @@ public class UserStockController implements Initializable{
     	
     	sortList = new ArrayList<>();
 		stockList = FXCollections.observableArrayList();
-		
 	}
         
 	@Override
@@ -77,6 +89,7 @@ public class UserStockController implements Initializable{
 		listBtn.setOnAction(event -> handleListScene(event));
 		calcBtn.setOnAction(event -> handleCalcScene(event));
 		infoBtn.setOnAction(event -> handleInfoDialog(event));
+		rightClick();
 		
 		boolean refresh = false;
 		
@@ -95,6 +108,37 @@ public class UserStockController implements Initializable{
 			refresh = true;
 		}
 		
+
+
+	}
+	
+	public void rightClick() {
+		tableView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			//event.getButton() == MouseButton.SECONDAR
+			@Override
+			public void handle(MouseEvent event) {
+				if(event.getButton() == MouseButton.SECONDARY) {
+					ContextMenu contextMenu = new ContextMenu();
+					MenuItem copy = new MenuItem("copy item");
+					MenuItem hello = new MenuItem("hello :)");
+					contextMenu.getItems().add(copy);
+					contextMenu.getItems().add(hello); 
+					copy.setOnAction(e -> {
+						Clipboard clipboard = Clipboard.getSystemClipboard();
+						ClipboardContent clipboardContent = new ClipboardContent();
+						int su = tableView.getSelectionModel().getSelectedIndex();
+						StockTable click = stockList.get(su);
+						String item = click.getItemCol();
+						clipboardContent.putString(item);
+						clipboard.setContent(clipboardContent);
+					});
+					
+					contextMenu.show(tableView, event.getScreenX(), event.getScreenY());
+					
+				}
+			}
+		});
 	}
 	
 	private Stage primaryStage;

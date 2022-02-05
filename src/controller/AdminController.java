@@ -24,6 +24,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -33,11 +34,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import model.Item;
 import model.StockTable;
@@ -91,6 +98,7 @@ public class AdminController implements Initializable{
 		salesBtn.setOnAction(event -> handleSalesScene(event));
 		infoBtn.setOnAction(event -> handleInfoScene(event));
 		exportBtn.setOnAction(event -> handleExport(event));
+		rightClick();
 		
 		// tableView
 		if(stockList == null) {
@@ -107,6 +115,35 @@ public class AdminController implements Initializable{
 
 		deleteCell();
 
+	}
+	
+	public void rightClick() {
+		tableView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			//event.getButton() == MouseButton.SECONDAR
+			@Override
+			public void handle(MouseEvent event) {
+				if(event.getButton() == MouseButton.SECONDARY) {
+					ContextMenu contextMenu = new ContextMenu();
+					MenuItem copy = new MenuItem("copy item");
+					MenuItem hello = new MenuItem("hello :)");
+					contextMenu.getItems().add(copy);
+					contextMenu.getItems().add(hello); 
+					copy.setOnAction(e -> {
+						Clipboard clipboard = Clipboard.getSystemClipboard();
+						ClipboardContent clipboardContent = new ClipboardContent();
+						int su = tableView.getSelectionModel().getSelectedIndex();
+						StockTable click = stockList.get(su);
+						String item = click.getItemCol();
+						clipboardContent.putString(item);
+						clipboard.setContent(clipboardContent);
+					});
+					
+					contextMenu.show(tableView, event.getScreenX(), event.getScreenY());
+					
+				}
+			}
+		});
 	}
 	
 	public void handleExport(ActionEvent event) {
@@ -517,7 +554,7 @@ public class AdminController implements Initializable{
 			Parent root = FXMLLoader.load(getClass().getResource("/scene/adminCalc.fxml"));
 			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 			scene = new Scene(root);
-			stage.setTitle("AdminInput page");
+			stage.setTitle("AdminSales page");
 			stage.setScene(scene);
 			stage.show();
 		}catch(IOException e) {

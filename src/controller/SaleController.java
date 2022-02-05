@@ -54,6 +54,7 @@ public class SaleController implements Initializable{
 	@FXML private Button soldListBtn;
 	@FXML private Button calcBtn;
 	@FXML private Button infoBtn; 
+    @FXML private Button deleteBtn;
 	
 	@FXML private TextField saleItemTxt;
 	
@@ -97,6 +98,7 @@ public class SaleController implements Initializable{
 		soldListBtn.setOnAction(event -> handleListScene(event));
 		calcBtn.setOnAction(event -> handleCalcScene(event));
 		refundBtn.setOnAction(event -> handleRefund(event));
+		delete();
 		
 		// 판매 테이블 추가
 		saleItemTxt.setOnKeyPressed(event -> enterMakeList(event));
@@ -104,6 +106,26 @@ public class SaleController implements Initializable{
 		//dialog
 		infoBtn.setOnAction(event -> handleInfoDialog(event));
 		
+	}
+	
+	public void delete() {
+		
+		tableView.getSelectionModel().selectedItemProperty().addListener(
+			new ChangeListener<StockTable>() {
+
+				@Override
+				public void changed(ObservableValue<? extends StockTable> arg0, StockTable arg1, StockTable arg2) {
+					
+					deleteBtn.setOnAction(event -> {
+						
+						int su = tableView.getSelectionModel().getSelectedIndex();
+						tableList.remove(su);
+						tableView.refresh();
+						showTotal();
+					});
+					
+				}
+			});
 	}
 	
 
@@ -280,20 +302,7 @@ public class SaleController implements Initializable{
 
 	}
 	
-	public void handleListScene(ActionEvent event) {
-		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/scene/soldList.fxml"));
-			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-			scene = new Scene(root);
-			stage.setTitle("userStock page");
-			stage.setScene(scene);
-			stage.show();
-		}catch(IOException e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
+
 	public void enterMakeList(KeyEvent event) {
 		if(event.getCode() == KeyCode.ENTER) {
 			String item = saleItemTxt.getText().toUpperCase();
@@ -410,31 +419,24 @@ public class SaleController implements Initializable{
 		// 총 수량 오바되지 않게 관리
 		
 		tableView.refresh();
-		boolean check = true;
 		
+		boolean check = true;
 		int pri = Integer.parseInt(st.getPriceCol());
 		
 		for(int i=0; i<tableList.size(); i++) {
-			StockTable st1 = tableList.get(i);
-			for(int j=0; j<=i; j++) {
-				if(st1.getItemCol().equals(item_no)) {
-					int num = Integer.parseInt(st1.getQuantityCol());
+			StockTable stCheck = tableList.get(i);
+			if(stCheck.getItemCol().equals(item_no)) {
+				int num = Integer.parseInt(stCheck.getQuantityCol());
+				if(num < quantity) {
 					num += 1;
-					if(num > quantity) {
-						num -= 1;
-						System.out.println("수량 초과");
-						// 다이얼로그 띄우기
-					}
-					String su = String.valueOf(num);
-					st1.setQuantityCol(su);
-					st1.setPriceCol(String.valueOf(pri*num));
-					check = false;
-					break;
-				}else {
-					check = true;
 				}
+				stCheck.setQuantityCol(String.valueOf(num));
+				stCheck.setPriceCol(String.valueOf(pri*num));
+				check = false;
+				break;
+			}else {
+				check = true;
 			}
-			
 		}
 		
 		if(check) {
@@ -581,4 +583,18 @@ public class SaleController implements Initializable{
 		}
 	}
 
+	public void handleListScene(ActionEvent event) {
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource("/scene/soldList.fxml"));
+			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+			scene = new Scene(root);
+			stage.setTitle("userStock page");
+			stage.setScene(scene);
+			stage.show();
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 }

@@ -93,6 +93,11 @@
                            <font>
                               <Font name="Calibri Bold" size="20.0" />
                            </font></Button>
+                        <Button fx:id="deleteBtn" mnemonicParsing="false" prefWidth="100.0" text="delete">
+                           <font>
+                              <Font name="Calibri Bold" size="20.0" />
+                           </font>
+                        </Button>
                         <Button fx:id="refundBtn" mnemonicParsing="false" prefWidth="100.0" text="refund">
                            <font>
                               <Font name="Calibri Bold" size="20.0" />

@@ -185,7 +185,7 @@ public class AdminCalcController implements Initializable{
 			Parent root = FXMLLoader.load(getClass().getResource("/scene/admin.fxml"));
 			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 			scene = new Scene(root);
-			stage.setTitle("AdminInput page");
+			stage.setTitle("AdminStock page");
 			stage.setScene(scene);
 			stage.show();
 		}catch(IOException e) {

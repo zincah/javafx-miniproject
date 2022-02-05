@@ -6,6 +6,8 @@ import java.util.ResourceBundle;
 
 import dao.ShopInfoDAO;
 import dto.ShopInfoDTO;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,9 +15,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 public class JoinController implements Initializable{
@@ -27,6 +32,7 @@ public class JoinController implements Initializable{
 	@FXML private TextField phoneTxt;
 	@FXML private TextField shopTelTxt;
 	@FXML private TextArea shopAddressTxt;
+    @FXML private Label pwCheckLabel;
 	
 	@FXML private Button insertBtn;
 	@FXML private Button backBtn;
@@ -36,6 +42,20 @@ public class JoinController implements Initializable{
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		
+		if(pwTxt!=null) {
+			rePwTxt.textProperty().addListener(new ChangeListener<String>() {
+
+				@Override
+				public void changed(ObservableValue<? extends String> arg0, String oldValue, String newValue) {
+					if(pwTxt.getText().equals(newValue)) {
+						pwCheckLabel.setText("ok. same password~");
+					}else {
+						pwCheckLabel.setText("plz enter same password");
+					}
+				}
+			});
+		}
 
 	}
 	
@@ -55,7 +75,11 @@ public class JoinController implements Initializable{
 		
 		if (result == 1) {
 			System.out.println("가입 성공");
-			// 가입 성공이라는 모달 띄우기
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Information");
+			alert.setHeaderText(null);
+			alert.setContentText("success to join! :)");
+			alert.showAndWait();
 			
 			handleBack(event);
 			

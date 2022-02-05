@@ -130,7 +130,7 @@ public class AdminInputController implements Initializable{
 			Parent root = FXMLLoader.load(getClass().getResource("/scene/admin.fxml"));
 			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 			scene = new Scene(root);
-			stage.setTitle("AdminInput page");
+			stage.setTitle("AdminStock page");
 			stage.setScene(scene);
 			stage.show();
 		}catch(IOException e) {
@@ -205,9 +205,11 @@ public class AdminInputController implements Initializable{
 			@Override
 			public void handle(CellEditEvent event) {
 				 StockTable ot = (StockTable)event.getRowValue();
-				 ot.setItemCol((String)event.getNewValue());
-				 String item_no = ot.getItemCol();
+				 String newItemNum = (String)event.getNewValue();
+				 ot.setItemCol(newItemNum.toUpperCase());
+				 String item_no = ot.getItemCol().toUpperCase();
 				 String items[] = itemProperty(item_no);
+				 
 				 
 				 ot.setSizeCol(items[3]);
 				 ot.setColorCol(items[2]);
@@ -343,7 +345,7 @@ public class AdminInputController implements Initializable{
 			Parent root = FXMLLoader.load(getClass().getResource("/scene/adminCalc.fxml"));
 			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 			scene = new Scene(root);
-			stage.setTitle("AdminInput page");
+			stage.setTitle("AdminSales page");
 			stage.setScene(scene);
 			stage.show();
 		}catch(IOException e) {
