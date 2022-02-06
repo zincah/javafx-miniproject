@@ -120,6 +120,7 @@ public class SaleController implements Initializable{
 						
 						int su = tableView.getSelectionModel().getSelectedIndex();
 						tableList.remove(su);
+						// 여기서 에러 떴었는데...
 						tableView.refresh();
 						showTotal();
 					});
@@ -395,6 +396,7 @@ public class SaleController implements Initializable{
 			tableList.clear();
 			soldList.clear();
 			tableView.refresh();
+			showTotal();
 			System.out.println("둘다 성공");
 		}
 		
