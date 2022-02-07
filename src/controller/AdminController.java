@@ -78,9 +78,10 @@ public class AdminController implements Initializable{
 	private ArrayList<StockDTO> itemList;
 	private ArrayList<StockDTO> sortList;
 	private ObservableList<StockTable> stockList;
-	
+	private SortedList<StockTable> sort;
 	
 	public boolean check;
+	public boolean sorted;
 	
 	public AdminController() {
 		
@@ -91,6 +92,8 @@ public class AdminController implements Initializable{
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		
+		sorted = false;
 		
 		inputSceneBtn.setOnAction(event-> handleInputScene(event));
 		sortTableBtn.setOnAction(event -> handleSortTable(event));
@@ -133,10 +136,18 @@ public class AdminController implements Initializable{
 						Clipboard clipboard = Clipboard.getSystemClipboard();
 						ClipboardContent clipboardContent = new ClipboardContent();
 						int su = tableView.getSelectionModel().getSelectedIndex();
-						StockTable click = stockList.get(su);
-						String item = click.getItemCol();
-						clipboardContent.putString(item);
-						clipboard.setContent(clipboardContent);
+						if(sorted == false) {
+							StockTable click = stockList.get(su);
+							String item = click.getItemCol();
+							clipboardContent.putString(item);
+							clipboard.setContent(clipboardContent);
+						}else {
+							StockTable sortClick = sort.get(su);
+							String sortItem = sortClick.getItemCol();
+							clipboardContent.putString(sortItem);
+							clipboard.setContent(clipboardContent);
+						}
+						
 					});
 					
 					contextMenu.show(tableView, event.getScreenX(), event.getScreenY());
@@ -161,19 +172,37 @@ public class AdminController implements Initializable{
 		header.createCell(7).setCellValue("shop_no");
 		header.createCell(8).setCellValue("date");
 		
-		for(int i=0; i<stockList.size(); i++) {
-			StockTable st = stockList.get(i);
-			XSSFRow row = sheet.createRow(i+1);
-			row.createCell(0).setCellValue(st.getItemCol());
-			row.createCell(1).setCellValue(st.getQuantityCol());
-			row.createCell(2).setCellValue(st.getSizeCol());
-			row.createCell(3).setCellValue(st.getGenderCol());
-			row.createCell(4).setCellValue(st.getColorCol());
-			row.createCell(5).setCellValue(st.getKindCol());
-			row.createCell(6).setCellValue(st.getPriceCol());
-			row.createCell(7).setCellValue(st.getShopCol());
-			row.createCell(8).setCellValue(st.getDateCol());
+		if(sorted == false) {
 			
+			for(int i=0; i<stockList.size(); i++) {
+				StockTable st = stockList.get(i);
+				XSSFRow row = sheet.createRow(i+1);
+				row.createCell(0).setCellValue(st.getItemCol());
+				row.createCell(1).setCellValue(st.getQuantityCol());
+				row.createCell(2).setCellValue(st.getSizeCol());
+				row.createCell(3).setCellValue(st.getGenderCol());
+				row.createCell(4).setCellValue(st.getColorCol());
+				row.createCell(5).setCellValue(st.getKindCol());
+				row.createCell(6).setCellValue(st.getPriceCol());
+				row.createCell(7).setCellValue(st.getShopCol());
+				row.createCell(8).setCellValue(st.getDateCol());
+				
+			}
+		}else {
+			for(int i=0; i<sort.size(); i++) {
+				StockTable st = sort.get(i);
+				XSSFRow row = sheet.createRow(i+1);
+				row.createCell(0).setCellValue(st.getItemCol());
+				row.createCell(1).setCellValue(st.getQuantityCol());
+				row.createCell(2).setCellValue(st.getSizeCol());
+				row.createCell(3).setCellValue(st.getGenderCol());
+				row.createCell(4).setCellValue(st.getColorCol());
+				row.createCell(5).setCellValue(st.getKindCol());
+				row.createCell(6).setCellValue(st.getPriceCol());
+				row.createCell(7).setCellValue(st.getShopCol());
+				row.createCell(8).setCellValue(st.getDateCol());
+				
+			}
 		}
 		
 		Alert alert = new Alert(AlertType.INFORMATION);
@@ -197,6 +226,7 @@ public class AdminController implements Initializable{
 	
 	
 	public void handleStockTable(ActionEvent event) {
+		sorted = false;
 		stockList.clear();
 		tableView.refresh();
 		makeTable();
@@ -241,6 +271,7 @@ public class AdminController implements Initializable{
 	public void handleSortTable(ActionEvent event) {
 		// 버튼 누르면 다른 버튼이 앞으로 오게끔
 		showStockBtn.setDisable(false);
+		sorted = false;
 		
 		StockDAO dao = StockDAO.getInstance();
 		sortList = dao.sortItems();
@@ -403,33 +434,42 @@ public class AdminController implements Initializable{
 			filter.setPredicate(stock -> {
 				
 				if(newValue == null || newValue.isEmpty()) {
+					sorted = false;
 					return true;
 				}
 				
 				String upper = newValue.toUpperCase();
 				
 				if(stock.getItemCol().indexOf(upper) != -1) {
+					sorted = true;
 					return true;
 				}else if(stock.getGenderCol().indexOf(upper) != -1){
+					sorted = true;
 					return true;
 				}else if(stock.getColorCol().toUpperCase().indexOf(upper) != -1) {
+					sorted = true;
 					return true;
 				}else if(stock.getKindCol().indexOf(upper) != -1) {	
+					sorted = true;
 					return true;
 				}else if(stock.getShopCol().indexOf(upper) != -1) {
+					sorted = true;
 					return true;
 				}else if(stock.getDateCol().indexOf(upper) != -1) {
+					sorted = true;
 					return true;
 				}else {
+					sorted = true;
 					return false;
 				}
 				
 			});
 		});
 		
-		SortedList<StockTable> sort = new SortedList<>(filter);
+		sort = new SortedList<>(filter);
 		sort.comparatorProperty().bind(tableView.comparatorProperty());
 		tableView.setItems(sort);
+		
 	}
 	
 	
